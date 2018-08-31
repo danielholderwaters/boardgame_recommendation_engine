@@ -1,10 +1,47 @@
 #this is a recommendation engine project using boardgamegeek's API.
 #check this one out: https://apps.quanticfoundry.com/recommendations/tabletop/boardgame/
 #here is the preferred boardgamegeek python API package https://github.com/lcosmin/boardgamegeek/blob/develop/boardgamegeek/main.py
+#I'm using data dump code from here: https://github.com/leonardr/boardgamegeek-data-dump
 import os
 os.chdir('/mnt/c/Users/danie/Desktop/PythonCode')
 print ("current working directory is:", os.getcwd())
 
-#i dont know why, but after creating a virtual environment, this command prompt syntax works in linux:
-#sudo python -m pip install boardgamegeek
-import boardgamegeek
+from bs4 import BeautifulSoup
+from httplib2 import Http
+import os
+
+http = Http()
+
+if len(sys.argv) > 1:
+    DATE_DIR = sys.argv[1]
+else:
+    DATE_DIR = datetime.strftime(datetime.datetime.now(), "%Y%m")
+
+DUMP_DIR = os.path.join("BoardGameGeek.xml", DATE_DIR)
+
+SITEMAP_DIRECTORY = os.path.join(DUMP_DIR, "maps")
+if not os.path.exists(SITEMAP_DIRECTORY):
+    os.makedirs(SITEMAP_DIRECTORY)
+
+def req(*args, **kwargs):
+    try:
+        response, body = http.request(*args, **kwargs)
+    except Exception, e:
+        print "Could not request %r %r: %s" % (args, kwargs, e)
+        return None, None
+    return response, body
+
+response, body = req('http://boardgamegeek.com/sitemapindex')
+import time
+
+soup = BeautifulSoup(body, "lxml")
+for loc in soup.find_all("loc"):
+    url = loc.string.strip()
+    filename = url[url.rindex("sitemap_")+len("sitemap_"):]
+    path = os.path.join(SITEMAP_DIRECTORY, filename)
+    if os.path.exists(path):
+        continue
+    print "%s -> %s" % (url, path)
+    response, body = req(url)
+    open(path, "w").write(body)
+    time.sleep(1)
