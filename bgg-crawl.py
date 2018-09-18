@@ -1,16 +1,21 @@
 from httplib2 import Http
 import os
 import re
-import time
+import datetime
+import sys
+
+os.chdir('C:/Users/danie/Desktop/PythonCode')
+print ("current working directory is:", os.getcwd())
 
 if len(sys.argv) > 1:
     DATE_DIR = sys.argv[1]
 else:
-    DATE_DIR = datetime.strftime(datetime.datetime.now(), "%Y%m")
+    DATE_DIR = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m")
 
 DUMP_DIR = os.path.join("BoardGameGeek.xml", DATE_DIR)
 
 SITEMAP_DIRECTORY = os.path.join(DUMP_DIR, "maps")
+print(SITEMAP_DIRECTORY)
 GAME_OUTPUT_DIRECTORY = os.path.join(DUMP_DIR, "boardgame_batches")
 GEEKLIST_OUTPUT_DIRECTORY = os.path.join(DUMP_DIR, "geeklist")
 GAME_NUMBER = re.compile("/boardgame/([0-9]+)/")
@@ -30,27 +35,27 @@ http = Http()
 def req(*args, **kwargs):
     try:
         response, body = http.request(*args, **kwargs)
-    except Exception, e:
-        print "Could not request %r %r: %s" % (args, kwargs, e)
+    except Exception as e: #changing syntax here
+        print ("Could not request %r %r: %s" % (args, kwargs, e)) #changing syntax here
         return None, None
     return response, body
 
 def download_geeklist(number):
     filename = os.path.join(GEEKLIST_OUTPUT_DIRECTORY, "geeklist-%s.xml" % number)
     if os.path.exists(filename):
-        print "Skipping %s" % filename
+        print ("Skipping %s" % filename) #changing syntax here for python3
         return False
     url = GEEKLIST_URL % number
     if number in ("36742", "35076", "34435", "30058", "29485", "16221", "8785", "4368", "49088"):
         # For whatever reason these are known to be bad.
         return False
-    print "Downloading geeklist %s" % number
+    print ("Downloading geeklist %s" % number)
     response, body = req(
         url, "GET", headers = {
             "Accept-Encoding": "gzip,deflate",
             "User-Agent" : "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0)" })
     if body is not None:
-        open(filename, "w").write(body)
+        open(filename, "wb").write(body)
     return True
 
 def download_boardgame_batch(numbers):
@@ -61,19 +66,19 @@ def download_boardgame_batch(numbers):
         filename = "boardgame-" + numbers[0] + "-" + numbers[-1] + ".xml"
     path = os.path.join(GAME_OUTPUT_DIRECTORY, filename)
     if os.path.exists(path):
-        print "Skipping %s, already present." % path
+        print ("Skipping %s, already present." % path)
         return False
-    print filename, url
+    print (filename, url)
     response, body = req(url, "GET", headers={
             "Accept-Encoding": "gzip,deflate",
             "User-Agent": "Mozilla/5.0 (X11; U; Linux i586; de; rv:5.0) Gecko/20100101 Firefox/5.0" })
     if body is not None:
-        open(path, "w").write(body)
+        open(path, "wb").write(body)
     return True
 
 def crawl_boardgame_file(filename):
     """Download the listing for every board game in a single site map file."""
-    print "Processing %s" % filename
+    print ("Processing %s" % filename)
     numbers = []
     for line in open(filename):
         match = GAME_NUMBER.search(line)
@@ -83,7 +88,7 @@ def crawl_boardgame_file(filename):
             if len(numbers) >= BATCH_SIZE:
                 try:
                     made_request = download_boardgame_batch(numbers)
-                except Exception, e:
+                except  Exception as e:
                     made_request = download_boardgame_batch(numbers)
                 if made_request:
                     time.sleep(1)
@@ -106,6 +111,7 @@ def crawl_boardgames():
     """Download the listing for every board game in the site map."""
     for filename in os.listdir(SITEMAP_DIRECTORY):
         if '_boardgame_' in filename:
+            print("printing:", filename)
             crawl_boardgame_file(os.path.join(SITEMAP_DIRECTORY, filename))
 
 def crawl_geeklists():
@@ -114,4 +120,4 @@ def crawl_geeklists():
             crawl_geeklist_file(os.path.join(SITEMAP_DIRECTORY, filename))
 
 crawl_boardgames()
-crawl_geeklists()
+#crawl_geeklists()
