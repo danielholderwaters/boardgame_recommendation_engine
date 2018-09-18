@@ -1,32 +1,40 @@
 from httplib2 import Http
 import os
 import re
-import datetime
+import datetime #this module needs to be imported along with the original time module
 import sys
+import time
 
 os.chdir('C:/Users/danie/Desktop/PythonCode')
 print ("current working directory is:", os.getcwd())
 
+#DATE_DIR is a 6 character string with the %Y%m format. september 2018 will be "201809"
 if len(sys.argv) > 1:
     DATE_DIR = sys.argv[1]
 else:
     DATE_DIR = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m")
 
+#DUMP_DIR is a folder in your working directory ending with \BoardGameGeek.xml\DATE_DIR
 DUMP_DIR = os.path.join("BoardGameGeek.xml", DATE_DIR)
-
+#SITEMAP_DIRECTORY is the name of a sub-folder of DUMP_DIR called "maps"
 SITEMAP_DIRECTORY = os.path.join(DUMP_DIR, "maps")
-print(SITEMAP_DIRECTORY)
+#GAME_OUTPUT_DIRECTORY is the name of a sub-folder of maps called "boardgame_batches"
 GAME_OUTPUT_DIRECTORY = os.path.join(DUMP_DIR, "boardgame_batches")
+#GEETKLIST_OUTPUT_DIRECTORY is the name of a sub-folder of maps called "geeklist"
 GEEKLIST_OUTPUT_DIRECTORY = os.path.join(DUMP_DIR, "geeklist")
+#GAME_NUMBER is a string compiled of the subfolder 'boardgame' and ending with a game number. this will be the game's file
 GAME_NUMBER = re.compile("/boardgame/([0-9]+)/")
+#GEEKLIST_NUMBER is similar to GAME_NUMBER but with a 'geeklist' sub-folder
 GEEKLIST_NUMBER = re.compile("/geeklist/([0-9]*)/")
 
+#this for loop creates subfolders if they don't already exist
 for d in GAME_OUTPUT_DIRECTORY, GEEKLIST_OUTPUT_DIRECTORY:
     if not os.path.exists(d):
         os.makedirs(d)
 
 BATCH_SIZE = 20
 
+#these are the base urls for scraping.  notice the %s formatting.  this is where the boardgame or geeklist number will go
 BOARDGAME_URL = "http://boardgamegeek.com/xmlapi/boardgame/%s?comments=1&stats=1"
 GEEKLIST_URL = "http://boardgamegeek.com/xmlapi/geeklist/%s?comments=1"
 
@@ -58,6 +66,7 @@ def download_geeklist(number):
         open(filename, "wb").write(body)
     return True
 
+#defining the function to download a single boardgame's webpage as xml format
 def download_boardgame_batch(numbers):
     url = BOARDGAME_URL % ",".join(numbers)
     if len(numbers) == 1:
