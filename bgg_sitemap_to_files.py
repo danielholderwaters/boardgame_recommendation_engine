@@ -1,6 +1,7 @@
 #this is a recommendation engine project using boardgamegeek's API.
 #check this one out: https://apps.quanticfoundry.com/recommendations/tabletop/boardgame/
 #here is the preferred boardgamegeek python API package https://github.com/lcosmin/boardgamegeek/blob/develop/boardgamegeek/main.py
+#!!!IF ANY FILES ARE SAVED WITH SIZE 0, DELETE THOSE FILES AND RERUN THIS CODE!!!
 import os
 os.chdir('C:/Users/danie/Desktop/PythonCode')
 print ("current working directory is:", os.getcwd())
@@ -33,6 +34,8 @@ def req(*args, **kwargs):
     return response, body
 
 response, body = req('http://boardgamegeek.com/sitemapindex')
+print(response)
+print(body)
 import time
 
 soup = BeautifulSoup(body, "lxml")
