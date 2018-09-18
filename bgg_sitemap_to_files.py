@@ -52,3 +52,4 @@ for loc in soup.find_all("loc"):
     response, body = req(url)
     open(path, "w").write(str(body)) #some of the pages were throwing back errors because they were "bytes" and not "str", adding the str() command ensures th
     time.sleep(.1) #reduced this to .1 because...I wanted the program to run faster
+#SOMETHING ISN'T RIGHT...
