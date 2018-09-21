@@ -66,7 +66,7 @@ def download_geeklist(number):
         open(filename, "wb").write(body)
     return True
 
-#defining the function to download a single boardgame's webpage as xml format
+#defining the function to download a boardame pages in batches of 21 (0 is the first, so a batch of 0-20 is 21) as xml format
 def download_boardgame_batch(numbers):
     url = BOARDGAME_URL % ",".join(numbers)
     if len(numbers) == 1:
@@ -129,4 +129,4 @@ def crawl_geeklists():
             crawl_geeklist_file(os.path.join(SITEMAP_DIRECTORY, filename))
 
 crawl_boardgames()
-#crawl_geeklists()
+#crawl_geeklists() #hashed because I'm not interested in the geeklists yet.
