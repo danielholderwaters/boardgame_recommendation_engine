@@ -5,6 +5,10 @@ import jsonpickle
 import datetime
 import sys
 
+#for my system, the following is the directory:
+os.chdir('C:/Users/danie/Desktop/PythonCode')
+print ("current working directory is:", os.getcwd())
+
 INPUT_PATH = "BoardGameGeek.xml/%s/boardgame_batches/"
 OUTPUT_PATH = "BoardGameGeek.json/%s/boardgame_batches/"
 
@@ -13,6 +17,7 @@ if len(sys.argv) > 1:
 else:
     DATE_DIR = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m")
 
+#ensure the prior scripts were run in the same month, or this won't work
 input_dir = INPUT_PATH % DATE_DIR
 output_dir = OUTPUT_PATH % DATE_DIR
 if not os.path.exists(output_dir):
