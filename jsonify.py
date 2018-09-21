@@ -1,13 +1,16 @@
 from pdb import set_trace
 import os
-from game import Game
 import jsonpickle
 import datetime
 import sys
+sys.path.append('C:/Users/danie/Desktop/PythonCode') # this line is necessary for calling the game module, which exists in the same directory as this file
+from game import Game
 
 #for my system, the following is the directory:
 os.chdir('C:/Users/danie/Desktop/PythonCode')
 print ("current working directory is:", os.getcwd())
+
+
 
 INPUT_PATH = "BoardGameGeek.xml/%s/boardgame_batches/"
 OUTPUT_PATH = "BoardGameGeek.json/%s/boardgame_batches/"
